@@ -1,8 +1,20 @@
-﻿@{
+﻿@model WebApplication.ModelView.BookCategoryViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <select asp-for="Categorys" class="form-control single-select" asp-items="Model.Categorys">
+        <option value="">All</option>
+    </select>
+
+    <select id="EstadoSigla" name="EstadoSigla">
+        <option value="MG">Minas Gerais</option>
+        <option value="RS">Rio Grande do Sul</option>
+        <option value="PR">Paraná</option>
+        <option selected="selected" value="SP">São Paulo</option>
+        <option value="RJ">Rio de Janeiro</option>
+        <option value="--">Outros Estados</option>
+    </select>
 </div>
+

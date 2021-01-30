@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Domain.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -31,12 +32,26 @@ namespace Domain
             PublishingCompany = publishingCompany;
         }
 
+        [Required(ErrorMessage = "Titulo é Obrigatório")]
+        [Display(Name = "Titulo")]
         public string Title { get; set; }
+        [Required(ErrorMessage = "Descrição é Obrigatório")]
+        [Display(Name = "Descrição")]
         public string Description { get; set; }
+        [Required(ErrorMessage = "Autor é Obrigatório")]
+        [Display(Name = "Autor")]
         public string Author { get; set; }
+        [Required(ErrorMessage = "Ano é Obrigatório")]
+        [Display(Name = "Ano de publicação")]
         public string Year { get; set; }
+        [Display(Name = "Categoria")]
+        [Required(ErrorMessage = "Categoria é Obrigatório")]
         public Guid CategoryId { get; set; }
+        public virtual Category Category { get; set; }
+        [Required(ErrorMessage = "Editora é Obrigatório")]
+        [Display(Name = "Editora")]
         public string PublishingCompany { get; set; }
+        [Display(Name = "Alugado?")]
         public Boolean Rented { get; set; }
         // public bit[] image { get; set; }
 

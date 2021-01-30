@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Domain.Interface;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -6,21 +9,27 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Models;
+using WebApplication.ModelView;
 
 namespace WebApplication.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IContext context, ILogger<HomeController> logger): base(context)
         {
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            return View();
+            SelectList selectLists = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name");
+            var BookCategoryVM = new BookCategoryViewModel
+            {
+                Categorys = selectLists
+            };
+            return View(BookCategoryVM);
         }
 
         public IActionResult Privacy()
