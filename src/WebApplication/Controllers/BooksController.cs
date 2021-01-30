@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using WebApplication.ModelView;
 using Domain.Paginator;
 using PagedList;
 using WebApplication.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApplication.Controllers
 {
@@ -20,7 +22,7 @@ namespace WebApplication.Controllers
     {
         private readonly ILogger<BooksController> _logger;
 
-        public BooksController(IContext context, ILogger<BooksController> logger): base(context)
+        public BooksController(IContext context, ILogger<BooksController> logger) : base(context)
         {
             _logger = logger;
         }
@@ -215,6 +217,33 @@ namespace WebApplication.Controllers
         private bool BookExists(Guid id)
         {
             return _context.Books.Any(e => e.Id == id);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> upload(IFormFile file, Guid id)
+        {
+            byte[] buffer = new byte[file.Length];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                if (file != null)
+                {
+                    file.CopyTo(ms);
+                    var book = _context.Books.FirstOrDefault(x => x.Id == id);
+                    book.Image = ms.ToArray();
+                    _context.Books.Update(book);
+                    await Task.FromResult(_context.SaveChanges());
+                }
+            }
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public async Task<ActionResult> RenderImage(Guid id)
+        {
+            var book = await _context.Books.FindAsync(id);
+
+            byte[] photoBack = book.Image;
+
+            return File(photoBack, "image/png");
         }
     }
 }

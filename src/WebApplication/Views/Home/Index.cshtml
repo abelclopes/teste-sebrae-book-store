@@ -1,10 +1,14 @@
-﻿@model WebApplication.ModelView.BookCategoryViewModel
+﻿@model PaginatedList<Domain.Book>
+@using PagedList.Mvc;
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <select asp-for="Categorys" class="form-control single-select" asp-items="Model.Categorys">
+    <select  class="form-control single-select" asp-items="ViewBag.Categorys">
         <option value="">All</option>
     </select>
 
@@ -17,4 +21,87 @@
         <option value="--">Outros Estados</option>
     </select>
 </div>
+@foreach (var item in Model)
+{
+    
+    <hr />
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="div-horizontal">
+                @if (item.Image == null)
+                {
+                    <img src="/images/default.png" style="width:200px" />
+                }
+                else
+                {
+                    <img src="@Url.Action("RenderImage", new { id = item.Id})" style="width:200px" />
+                }
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="col-sm-12" style="font-size: 36px; color: #007bff;">
+                @Html.DisplayFor(modelItem => item.Title)
+            </div>
+            <div class="row col-sm-10">
+                <div class="col-sm-12">
+                    <strong>@Html.DisplayFor(modelItem => item.Author)</strong> - <strong>@Html.DisplayFor(modelItem => item.Year)</strong>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <p style="font-size: 13px; padding: 30px 0px;">
+                    @Html.DisplayFor(modelItem => item.Description)
+                </p>
+            </div>
 
+            
+            <div class="col-sm-12" style="padding: 0px; text-transform:capitalize">
+                <div class="col-sm-12" style="text-transform:capitalize">
+                    <strong>Categoria:</strong> @Html.DisplayFor(modelItem => item.Category.Name)
+                </div>
+
+                <div class="col-sm-12">
+                    <strong>Editora: </strong>  @Html.DisplayFor(modelItem => item.PublishingCompany)
+                </div>
+                    @{
+                        string rentedItem = "";
+                        @if(item.Rented)
+                        {
+                            rentedItem = "rentedItem";
+                        }
+                        else
+                        {
+                            rentedItem = "notRentedItem";
+                        }
+                    }
+                <div class="col-sm-12">
+                <strong>Disponivel?</strong>  <strong class="@rentedItem">
+                                    @if(item.Rented){
+                                        <text>Não</text>
+                                    }else{
+                                        <text>Sim</text>
+                                    }
+                                </strong>
+                </div>
+
+                <div class="col-sm-12">
+                    <strong>Cadastro:</strong> @Html.DisplayFor(modelItem => item.DateCriation)
+                </div>
+
+                <div class="col-sm-12">
+                    <strong>Ultima Atualização:</strong> @Html.DisplayFor(modelItem => item.DateUpdate)
+                </div>           
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-12" style="padding: 20px; display: contents;">
+            <div class="col-sm-5" style="padding: 20px;">
+                <a asp-action="Edit" asp-controller="Books" asp-route-id="@item.Id" class="btn btn-primary btn-md btn-block" style="margin-right:20px;">Editar</a>
+            </div>
+            <div class="col-sm-5" style="padding: 20px;">
+                <a asp-action="Index" class="btn btn-outline-primary btn-md btn-block">Voltar</a>
+            </div>
+        </div>
+    </div>
+    <br />
+}

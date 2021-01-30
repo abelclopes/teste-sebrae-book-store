@@ -40,7 +40,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Book.CategoryId" class="control-label"></label>
-                <select asp-for="Book.CategoryId" class="form-control single-select" asp-items="Model.Categorys">
+                <select asp-for="Book.CategoryId" class="form-control single-select" asp-items="Model.Categorys" style="text-transform:capitalize">
                     <option></option>
                 </select>
                 <span asp-validation-for="Book.CategoryId" class="text-danger"></span>
@@ -52,7 +52,7 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Salvar" class="btn btn-primary" />
-                <a  class="btn btn-primary"  asp-action="Index">Cancelar</a>
+                <a  class="btn btn-outline-primary"  asp-action="Index">Cancelar</a>
             </div>
         </form>
     </div>

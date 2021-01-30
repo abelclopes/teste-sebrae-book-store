@@ -53,7 +53,7 @@ namespace Domain
         public string PublishingCompany { get; set; }
         [Display(Name = "Alugado?")]
         public Boolean Rented { get; set; }
-        // public bit[] image { get; set; }
+        public byte[] Image { get; set; }
 
         public void update(Book model)
         {

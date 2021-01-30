@@ -4,75 +4,88 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h3>Detalhes</h1>
 
 <div>
-    <h4>Book</h4>
+    <h4>Livro</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Author)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Author)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Year)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Year)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PublishingCompany)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PublishingCompany)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rented)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rented)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateCriation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateCriation)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateUpdate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateUpdate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Excluded)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Excluded)
-        </dd>
-    </dl>
+
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="div-horizontal">
+                @if (Model.Image == null)
+                {
+                    <img src="/images/default.png" style="width:200px" />
+                }
+                else
+                {
+                    <img src="@Url.Action("RenderImage", new { id = Model.Id})" style="width:200px" />
+                }
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="col-sm-12" style="font-size: 36px; color: #007bff;">
+                @Html.DisplayFor(model => model.Title)
+            </div>
+            <div class="row col-sm-10">
+                <div class="col-sm-12">
+                    <strong>@Html.DisplayFor(model => model.Author)</strong> - <strong>@Html.DisplayFor(model => model.Year)</strong>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <p style="font-size: 13px; padding: 30px 0px;">
+                    @Html.DisplayFor(model => model.Description)
+                </p>
+            </div>
+
+            
+            <div class="col-sm-12" style="padding: 0px; text-transform:capitalize">
+                <div class="col-sm-12" style="text-transform:capitalize">
+                    <strong>Categoria:</strong> @Html.DisplayFor(model => model.Category.Name)
+                </div>
+
+                <div class="col-sm-12">
+                    <strong>Editora: </strong>  @Html.DisplayFor(model => model.PublishingCompany)
+                </div>
+                    @{
+                        string rentedItem = "";
+                        @if(Model.Rented)
+                        {
+                            rentedItem = "rentedItem";
+                        }
+                        else
+                        {
+                            rentedItem = "notRentedItem";
+                        }
+                    }
+                <div class="col-sm-12">
+                <strong>Disponivel?</strong>  <strong class="@rentedItem">
+                                    @if(Model.Rented){
+                                        <text>Não</text>
+                                    }else{
+                                        <text>Sim</text>
+                                    }
+                                </strong>
+                </div>
+
+                <div class="col-sm-12">
+                    <strong>Cadastro:</strong> @Html.DisplayFor(model => model.DateCriation)
+                </div>
+
+                <div class="col-sm-12">
+                    <strong>Ultima Atualização:</strong> @Html.DisplayFor(model => model.DateUpdate)
+                </div>           
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="row justify-content-center">
+    <div class="col-sm-12" style="padding: 20px; display: contents;">
+        <div class="col-sm-5" style="padding: 20px;">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-lg btn-block" style="margin-right:20px;">Editar</a>
+        </div>
+        <div class="col-sm-5" style="padding: 20px;">
+            <a asp-action="Index" class="btn btn-outline-primary btn-lg btn-block">Voltar</a>
+        </div>
+    </div>
 </div>
