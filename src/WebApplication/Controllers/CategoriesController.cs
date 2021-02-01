@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Domain;
 using Infraestructure;
+using Microsoft.Extensions.Logging;
+using Domain.Interface;
+using WebApplication.Models;
+using WebApplication.Models.Pagination;
 
 namespace WebApplication.Controllers
 {
@@ -20,9 +24,52 @@ namespace WebApplication.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder,
+                                                string currentFilter,
+                                                string searchString,
+                                                int? pageNumber)
         {
-            return View(await _context.Categories.ToListAsync());
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            ViewData["CurrentFilter"] = searchString;
+
+            var categorias = _context.Categories.AsQueryable();
+            var Listcategorias = categorias.AsQueryable();
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                Listcategorias = Listcategorias.Where(x => x.Name.Contains(searchString)
+                               || x.Description.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    Listcategorias = Listcategorias.OrderByDescending(s => s.Name);
+                    break;
+                case "Date":
+                    Listcategorias = Listcategorias.OrderBy(s => s.DateCriation);
+                    break;
+                case "date_desc":
+                    Listcategorias = Listcategorias.OrderByDescending(s => s.DateCriation);
+                    break;
+                default:
+                    Listcategorias = Listcategorias.OrderBy(s => s.Name);
+                    break;
+            }
+            int pageSize = 10;
+
+
+            var paginationList = await Task.FromResult(new PaginationList<Category>( pageNumber ?? 1, pageSize));
+            return View(paginationList.Read(Listcategorias));
         }
 
         // GET: Categories/Details/5
@@ -59,7 +106,7 @@ namespace WebApplication.Controllers
             if (ModelState.IsValid)
             {
                 category.Id = Guid.NewGuid();
-                _context.Add(category);
+                _context.Categories.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -98,7 +145,7 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    _context.Update(category);
+                    _context.Categories.Update(category);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

@@ -1,0 +1,101 @@
+﻿@model WebApplication.Models.Pagination.PagingEntity
+@if (Model.TotalPages > 0)
+{
+    <div class="pagingBox">
+        <input id="HiddenPageSize" name="PageSize" type="hidden" />
+        <input id="HiddenPage" name="Page" type="hidden" />
+        @* <span class="selectBoxes display_none_mobile">
+            @Html.DropDownList("Model.PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 } }, "Key", "Value", Convert.ToString(ViewBag.PageSize)), new { id = "pagesizelist" })
+        </span> *@
+        <div class="pagerecord display_none_mobile">
+            Total de paginas @Model.CurrentPage of @Model.TotalPages 
+        </div>
+
+        <div class="text-center">
+            <ul class="pagination">
+                @if (Model.CurrentPage == 1)
+                {
+                    <li class="disabled"><a class="disabled">Anterior</a></li>
+                }
+                else
+                {
+                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.CurrentPage-1)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.CurrentPage-1)');">Anterior</a></li>
+                }
+
+                @if (Model.CurrentPage < 5)
+                {
+                    <li @(Model.CurrentPage == 1 ? "class=active" : "")><a href="/@Model.Controller/@Model.Action/?PageNumber=1&PageSize=@Model.PageSize" onclick="PageClicked('1');">1</a>
+                    
+                    </li>
+                    if (@Model.TotalPages > 2)
+                    {
+                        <li @(Model.CurrentPage == 2 ? "class=active" : "")><a href="/@Model.Controller/@Model.Action/?PageNumber=2&PageSize=@Model.PageSize" onclick="PageClicked('2');">2</a></li>
+                    }
+                    if (@Model.TotalPages > 3)
+                    {
+                        <li @(Model.CurrentPage == 3 ? "class=active" : "")><a href="/@Model.Controller/@Model.Action/?PageNumber=3&PageSize=@Model.PageSize" onclick="PageClicked('3');">3</a></li>
+                    }
+                    if (@Model.TotalPages > 4)
+                    {
+                        <li @(Model.CurrentPage == 4 ? "class=active" : "")><a href="/@Model.Controller/@Model.Action/?PageNumber=4&PageSize=@Model.PageSize" onclick="PageClicked('4');">4</a></li>
+                    }
+                    if (@Model.TotalPages > 5)
+                    {
+                        <li @(Model.CurrentPage == 5 ? "class=active" : "")><a href="/@Model.Controller/@Model.Action/?PageNumber=5&PageSize=@Model.PageSize" onclick="PageClicked('5');">5</a></li>
+                    }
+                    if (Model.TotalPages > 5)
+                    {
+                        <li class="disabled"><a href="#">...</a></li>
+                        <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@Model.TotalPages&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.TotalPages)');">@(Model.TotalPages)</a></li>
+                    }
+                }
+                else if (Model.CurrentPage >= 5 && Model.CurrentPage <= Model.TotalPages - 4)
+                {
+                    <li><a href="#" onclick="PageClicked('1');">1</a></li>
+                    if (Model.TotalPages > 5)
+                    {
+                        <li class="disabled"><a href="#">...</a></li>
+                    }
+                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.CurrentPage-1)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.CurrentPage-1)');">@(Model.CurrentPage - 1)</a></li>
+                    <li class="active"><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.CurrentPage)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.CurrentPage)');">@(Model.CurrentPage)</a></li>
+                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.CurrentPage+1)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.CurrentPage+1)');">@(Model.CurrentPage + 1)</a></li>
+                    <li class="disabled"><a href="#">...</a></li>
+                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=Model.TotalPages&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.TotalPages)');">@(Model.TotalPages)</a></li>
+                }
+
+                else if (Model.CurrentPage > Model.TotalPages - 4)
+                {
+                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=1&PageSize=@Model.PageSize" onclick="PageClicked('1');">1</a></li>
+                    <li class="disabled"><a href="#">...</a></li>
+                    if ((Model.TotalPages - 4) > 2)
+                    {
+                        <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.TotalPages - 4)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.TotalPages-4)');">@(Model.TotalPages - 4)</a></li>
+                    }
+                    <li @(Model.TotalPages - 3 == Model.CurrentPage ? "class=active" : "")><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.TotalPages-3)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.TotalPages-3)');">@(Model.TotalPages - 3)</a></li>
+                    <li @(Model.TotalPages - 2 == Model.CurrentPage ? "class=active" : "")><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.TotalPages-2)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.TotalPages-2)');">@(Model.TotalPages - 2)</a></li>
+                    <li @(Model.TotalPages - 1 == Model.CurrentPage ? "class=active" : "")><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.TotalPages-1)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.TotalPages-1)');">@(Model.TotalPages - 1)</a></li>
+                    <li @(Model.TotalPages == Model.CurrentPage ? "class=active" : "")><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.TotalPages)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.TotalPages)');">@(Model.TotalPages)</a></li>
+                }
+
+                @if (Model.CurrentPage == Model.TotalPages)
+                {
+                    <li class="disabled"><a href="javascript:void(0);">Next</a></li>
+                }
+                else
+                {
+                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.CurrentPage+1)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.CurrentPage+1)');">Next</a></li>
+                }
+            </ul>
+            <div style="display:none;">
+                <input type="submit" id="btnSavepaging" />
+            </div>
+            @Html.Hidden("CurrentPage", "1")
+
+        </div>
+
+    </div>
+
+    <div id="divProcessing" class="processingButton" style="display: none;">
+        <img width="31" height="31" alt="" class="LoadingImage" src="~/Images/ajax-loader-round.gif" />
+    </div>
+} 

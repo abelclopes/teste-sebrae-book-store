@@ -1,59 +1,52 @@
-﻿@model IEnumerable<Domain.Category>
+﻿@model WebApplication.Models.Pagination.PaginationList<Domain.Category>
+
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categoria";
 }
 
-<h1>Index</h1>
+<h1>Categoria</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Nova Categoria</a>
 </p>
-<table class="table">
+<table class="table table-hover table-striped table-bordered table-sm">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateCriation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateUpdate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Excluded)
+            <th style="width: 80%">
+                @Html.DisplayNameFor(model => model.Result.FirstOrDefault().Name)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Result) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateCriation)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateUpdate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Excluded)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            <td class="arround-icons-center">
+                <a asp-action="Edit" asp-route-id="@item.Id" style="margin: 5px 10px;"><i class="fas fa-pen-alt fa-1x"></i></a>
+                <a asp-action="Details" asp-route-id="@item.Id" style="margin: 5px 10px;"><i class="fas fa-search"></i></a>
+                <a asp-action="Delete" asp-route-id="@item.Id" style="margin: 5px 10px;"><i class="fas fa-trash fa-1x"></i></a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+
+<div id="container" style="margin-left: 20px">
+    <p></p>
+    <p></p>
+    <div class="pagination" style="margin-left: 400px">
+        <partial name="../Shared/_PagingPartial.cshtml" model='new WebApplication.Models.Pagination.PagingEntity {
+                CurrentPage = Model.PageNumber,
+                PageSize = Model.PageSize,
+                TotalPages = Model.TotalPage,
+                TotalRecords = Model.TotalRecords,
+                Action = "Index",
+                Controller = "Categories"
+                }'>
+    </div>
+</div>

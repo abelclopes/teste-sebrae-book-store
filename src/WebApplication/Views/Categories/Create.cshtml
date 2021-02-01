@@ -21,17 +21,7 @@
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateCriation" class="control-label"></label>
-                <input asp-for="DateCriation" class="form-control" />
-                <span asp-validation-for="DateCriation" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateUpdate" class="control-label"></label>
-                <input asp-for="DateUpdate" class="form-control" />
-                <span asp-validation-for="DateUpdate" class="text-danger"></span>
-            </div>
+            </div>            
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Excluded" /> @Html.DisplayNameFor(model => model.Excluded)

@@ -15,6 +15,7 @@ using Domain.Paginator;
 using PagedList;
 using WebApplication.Models;
 using Microsoft.AspNetCore.Http;
+using WebApplication.Models.Pagination;
 
 namespace WebApplication.Controllers
 {
@@ -32,7 +33,7 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> Index(string sortOrder,
                                                 string currentFilter,
                                                 string searchString,
-                                                int? pageNumber)
+                                                int pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -71,7 +72,8 @@ namespace WebApplication.Controllers
 
             int pageSize = 10;
 
-            return View(await PaginatedList<Book>.CreateAsync(listBook.AsNoTracking(), pageNumber ?? 1, pageSize));
+            var paginationList = new PaginationList<Book>(pageNumber, pageSize);
+            return View(paginationList.Read(listBook));
         }
 
         // GET: Books/Details/5
@@ -96,13 +98,13 @@ namespace WebApplication.Controllers
         // GET: Books/Create
         public async Task<IActionResult> CreateAsync()
         {
-            SelectList selectLists = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name");
+            SelectList selectLists = new SelectList(await _context.Categories.OrderBy (c => c.Name).ToListAsync(), "Id", "Name");
             var BookCategoryVM = new BookCategoryViewModel
             {
                 Categorys = selectLists,
                 Book = new Book()
             };
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.Categories.OrderBy (c => c.Name), "Id", "Name");
             return View(BookCategoryVM);
         }
 
@@ -120,13 +122,13 @@ namespace WebApplication.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            SelectList selectLists = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name");
+            SelectList selectLists = new SelectList(await _context.Categories.OrderBy (c => c.Name).ToListAsync(), "Id", "Name");
             var BookCategoryVM = new BookCategoryViewModel
             {
                 Categorys = selectLists,
                 Book = new Book()
             };
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.Categories.OrderBy (c => c.Name), "Id", "Name");
             return View(book);
         }
 
@@ -143,7 +145,7 @@ namespace WebApplication.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories.OrderBy (c => c.Name), "Id", "Name", book.CategoryId);
             return View(book);
         }
 
@@ -179,7 +181,7 @@ namespace WebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Id", book.CategoryId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories.OrderBy (c => c.Name), "Id", "Name", book.CategoryId);
             return View(book);
         }
 

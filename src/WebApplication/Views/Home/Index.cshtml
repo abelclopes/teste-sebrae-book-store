@@ -1,4 +1,4 @@
-﻿@model PaginatedList<Domain.Book>
+﻿@model WebApplication.Models.Pagination.PaginationList<Domain.Book>
 @using PagedList.Mvc;
 
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
@@ -7,21 +7,30 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <select  class="form-control single-select" asp-items="ViewBag.Categorys">
-        <option value="">All</option>
-    </select>
-
-    <select id="EstadoSigla" name="EstadoSigla">
-        <option value="MG">Minas Gerais</option>
-        <option value="RS">Rio Grande do Sul</option>
-        <option value="PR">Paraná</option>
-        <option selected="selected" value="SP">São Paulo</option>
-        <option value="RJ">Rio de Janeiro</option>
-        <option value="--">Outros Estados</option>
-    </select>
+<hr />
+<div class="row" style="padding: 20px ;">    
+    <form asp-controller="Home" asp-action="Index" style="width: 100%;">
+        <div class="col-sm-3   float-left">
+           <select  name="categoryFilter" class="form-control single-select" asp-items="ViewBag.Categorys">
+                <option value="">Todas</option>
+            </select>
+        </div>
+        <div class="col-5  float-left">
+            <input type="text" name="SearchString" value="@ViewBag.CurrentFilter" class="form-control" />
+        </div>
+        <div class="col-3 float-left">
+            <button class="btn btn-primary">Pesquisar</button>
+            <a asp-action="Index" class="btn btn-lin">Resetar</a>
+        </div>
+        
+        <div class="col-sm-12   float-left">
+           <select  name="rentedFilter" class="form-control single-select" asp-items="ViewBag.rentedOption">
+                <option value="">Todas</option>
+            </select>
+        </div>
+    </form>
 </div>
-@foreach (var item in Model)
+@foreach (var item in Model.Result)
 {
     
     <hr />
@@ -93,15 +102,15 @@
             </div>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-sm-12" style="padding: 20px; display: contents;">
-            <div class="col-sm-5" style="padding: 20px;">
-                <a asp-action="Edit" asp-controller="Books" asp-route-id="@item.Id" class="btn btn-primary btn-md btn-block" style="margin-right:20px;">Editar</a>
-            </div>
-            <div class="col-sm-5" style="padding: 20px;">
-                <a asp-action="Index" class="btn btn-outline-primary btn-md btn-block">Voltar</a>
-            </div>
-        </div>
-    </div>
-    <br />
+    
 }
+
+<partial name="../Shared/_PagingPartial.cshtml" model='new WebApplication.Models.Pagination.PagingEntity {
+    CurrentPage = Model.PageNumber,
+    PageSize = Model.PageSize,
+    TotalPages = Model.TotalPage,
+    TotalRecords = Model.TotalRecords,
+    Action = "Index",
+    Controller = "Home"
+    }'>
+    <br />

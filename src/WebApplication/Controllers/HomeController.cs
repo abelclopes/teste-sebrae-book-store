@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Models;
+using WebApplication.Models.Pagination;
 using WebApplication.ModelView;
 
 namespace WebApplication.Controllers
@@ -25,6 +26,7 @@ namespace WebApplication.Controllers
 
         public async Task<IActionResult> Index(string sortOrder,
                                                 string currentFilter,
+                                                string categoryFilter,
                                                 string searchString,
                                                 int? pageNumber)
         {
@@ -39,8 +41,13 @@ namespace WebApplication.Controllers
             {
                 searchString = currentFilter;
             }
-            ViewData["CurrentFilter"] = searchString;
-            var listBook = _context.Books.Include(b => b.Category).AsQueryable(); //.Join(_context.Categories, book => book.CategoryId, cat => cat.Id, (book, cat) => new { Book = book, Category = cat });
+            ViewBag.categoryFilter = categoryFilter;
+            ViewBag.CurrentFilter = searchString;
+            var listBook = _context.Books.Include(b => b.Category).Where(x=> !x.Excluded).AsQueryable(); //.Join(_context.Categories, book => book.CategoryId, cat => cat.Id, (book, cat) => new { Book = book, Category = cat });
+            if (!String.IsNullOrEmpty(categoryFilter))
+            {
+                listBook = listBook.Where(x => x.CategoryId.ToString() == categoryFilter);
+            }
             if (!String.IsNullOrEmpty(searchString))
             {
                 listBook = listBook.Where(x => x.Title.Contains(searchString)
@@ -64,10 +71,12 @@ namespace WebApplication.Controllers
             }
 
             int pageSize = 10;
-
-           ViewBag.Categorys = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name");
+           ViewBag.rentedOption = new SelectList(SelectListOptionsViewModel.GetList(), "key", "value");
+           ViewBag.Categorys = new SelectList(await _context.Categories.OrderBy (c => c.Name).ToListAsync(), "Id", "Name");
             
-            return View(await PaginatedList<Book>.CreateAsync(listBook.AsNoTracking(), pageNumber ?? 1, pageSize));
+
+            var paginationList = await Task.FromResult(new PaginationList<Book>( pageNumber ?? 1, pageSize));
+            return View(paginationList.Read(listBook));
         }
 
         public IActionResult Privacy()
