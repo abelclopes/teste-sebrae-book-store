@@ -1,8 +1,122 @@
-﻿@{
+﻿@model WebApplication.Models.Pagination.PaginationList<Domain.Book>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<hr />
+<div class="row" style="padding: 20px ;">
+    <form asp-controller="Home" asp-action="Index" method="get" style="width: 100%;">
+        <div class="col-sm-21   float-left">
+            <select name="CategoryFilter" class="form-control single-select" asp-items="ViewBag.Categorys">
+                <option value="">Todas</option>
+            </select>
+        </div>
+        <div class="col-sm-2   float-left">
+            <select name="RentedFilter" class="form-control single-select" asp-items="ViewBag.rentedOption">
+            </select>
+        </div>
+        <div class="col-4  float-left">
+            <input type="text" name="SearchString" value="@ViewBag.CurrentFilter" class="form-control" />
+        </div>
+        <div class="col-3 float-left">
+            <button class="btn btn-primary">Pesquisar</button>
+            <a asp-action="Index" class="btn btn-lin">Resetar</a>
+        </div>
+
+    </form>
 </div>
+<div class="row">
+@foreach (var item in Model.Result)
+{
+
+    <hr />
+        <div class="col-sm-4 margin-botton">
+            <div class="col-sm-12" style="font-size: 25px; color: #007bff;">
+                @Html.DisplayFor(modelItem => item.Title)
+            </div>
+            <div class="row col-sm-10">
+                <div class="col-sm-12">
+                    <strong>@Html.DisplayFor(modelItem => item.Author)</strong> - <strong>@Html.DisplayFor(modelItem => item.Year)</strong>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="div-horizontal">
+                    @if (item.Image == null)
+                    {
+                        <img src="/images/default.png" style="width:200px" />
+                    }
+                    else
+                    {
+                        <img src="@Url.Action("RenderImage", new { id = item.Id})" style="width:200px" />
+                    }
+                </div>
+            </div>
+            <div class="col-sm-12" style="padding: 0px; text-transform:capitalize">
+                <div class="col-sm-12" style="text-transform:capitalize">
+                    <strong>Categoria:</strong> @Html.DisplayFor(modelItem => item.Category.Name)
+                </div>
+
+                <div class="col-sm-12">
+                    <strong>Editora: </strong>  @Html.DisplayFor(modelItem => item.PublishingCompany)
+                </div>
+                @{
+                    string rentedItem = "";
+                    @if (item.Rented)
+                    {
+                        rentedItem = "rentedItem";
+                    }
+                    else
+                    {
+                        rentedItem = "notRentedItem";
+                    }
+                }
+                <div class="col-sm-12">
+                    <strong>Disponivel?</strong>  <strong class="@rentedItem">
+                        @if (item.Rented)
+                        {
+                            <text>Não</text>
+                        }
+                        else
+                        {
+                            <text>Sim</text>
+                        }
+                    </strong>
+                </div>
+            <hr />
+        </div>
+        <div class="col-sm-6 float-left"></div>
+        <div class="col-sm-6 float-left">
+           <a href="/home/details/@item.Id" class="btn btn-outline-primary">Ver Detalhes</a>
+        </div>  
+    </div>
+
+}
+</div>
+@if (Model.Result.Count() == 0)
+{
+    <hr />
+    <div class="row">
+        <div class="noResultsFound">
+            Nenhum Resultado encontrado
+        </div>
+    </div>
+}
+@if (Model.TotalPage > 1)
+{
+<div id="container">
+    <div class="row justify-content-center">
+        <div class="pagination">
+            <partial name="../Shared/_PagingPartial.cshtml" model='new WebApplication.Models.Pagination.PagingEntity {
+                CurrentPage = Model.PageNumber,
+                PageSize = Model.PageSize,
+                TotalPages = Model.TotalPage,
+                TotalRecords = Model.TotalRecords,
+                Action = "Index",
+                Controller = "Home"
+                }'>
+        </div>
+    </div>
+</div>
+}

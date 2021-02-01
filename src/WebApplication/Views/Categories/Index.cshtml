@@ -1,0 +1,81 @@
+﻿@model WebApplication.Models.Pagination.PaginationList<Domain.Category>
+
+
+@{
+    ViewData["Title"] = "Categoria";
+}
+
+<h1>Categoria</h1>
+
+<p>
+    <a asp-action="Create">Nova Categoria</a>
+</p>
+<div class="row" style="padding: 20px ;">
+    <form asp-controller="Categories" asp-action="Index" method="get" style="width: 100%;">
+        <div class="col-8  float-left">
+            <input type="text" name="SearchString" value="@ViewBag.CurrentFilter" class="form-control" />
+        </div>
+        <div class="col-3 float-left">
+            <button class="btn btn-primary">Pesquisar</button>
+            <a asp-action="Index" class="btn btn-lin">Resetar</a>
+        </div>
+
+    </form>
+</div>
+<hr />
+<table class="table table-hover table-striped table-bordered table-sm">
+    <thead>
+        <tr>
+            <th style="width: 80%; text-transform: capitalize;">
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]"
+                    asp-route-currentFilter="@ViewData["CurrentFilter"]">@Html.DisplayNameFor(model =>
+                    model.Result.FirstOrDefault().Name)</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Result)
+        {
+            <tr>
+                <td style="text-transform: capitalize;">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td class="arround-icons-center">
+                    <a asp-action="Edit" asp-route-id="@item.Id" style="margin: 5px 10px;"><i
+                            class="fas fa-pen-alt fa-1x"></i></a>
+                    <a asp-action="Details" asp-route-id="@item.Id" style="margin: 5px 10px;"><i
+                            class="fas fa-search"></i></a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" style="margin: 5px 10px;"><i
+                            class="fas fa-trash fa-1x"></i></a>
+                </td>
+            </tr>
+        }
+
+        @if (Model.Result.Count() == 0)
+        {
+            <tr>
+                <td colspan="2" class="noResultsFound">
+                    Nenhum Resultado encontrado
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div id="container">
+    <div class="row justify-content-center">
+
+        <div class="pagination">
+            <partial name="../Shared/_PagingPartial.cshtml" model='new WebApplication.Models.Pagination.PagingEntity {
+                    CurrentPage = Model.PageNumber,
+                    PageSize = Model.PageSize,
+                    TotalPages = Model.TotalPage,
+                    TotalRecords = Model.TotalRecords,
+                    Action = "Index",
+                    Controller = "Categories"
+                }'>
+        </div>
+    </div>
+</div>
