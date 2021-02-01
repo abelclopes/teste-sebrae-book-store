@@ -11,9 +11,11 @@ using Microsoft.Extensions.Logging;
 using Domain.Interface;
 using WebApplication.Models;
 using WebApplication.Models.Pagination;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApplication.Controllers
-{
+{    
+    [Authorize]
     public class CategoriesController : BaseController
     {
         private readonly ILogger<CategoriesController> _logger;
@@ -24,51 +26,47 @@ namespace WebApplication.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index(string sortOrder,
-                                                string currentFilter,
-                                                string searchString,
-                                                int? pageNumber)
+        public async Task<IActionResult> Index(PagingParamters model)
         {
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-            if (searchString != null)
+            ViewData["CurrentSort"] = model.SortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(model.SortOrder) ? "name_desc" : "";
+            if (model.SearchString != null)
             {
-                pageNumber = 1;
+                model.PageNumber = 1;
             }
             else
             {
-                searchString = currentFilter;
+                model.SearchString = model.CurrentFilter;
             }
-            ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentFilter"] = model.SearchString;
 
-            var categorias = _context.Categories.AsQueryable();
-            var Listcategorias = categorias.AsQueryable();
-            if (!String.IsNullOrEmpty(searchString))
+            var Listcategorias = await _context.Categories.ToListAsync();
+            if (!String.IsNullOrEmpty(model.SearchString))
             {
-                Listcategorias = Listcategorias.Where(x => x.Name.Contains(searchString)
-                               || x.Description.Contains(searchString));
+                Listcategorias = Listcategorias.Where(x => x.Name.Contains(model.SearchString)
+                               || x.Description.Contains(model.SearchString)).ToList();
             }
 
-            switch (sortOrder)
+            switch (model.SortOrder)
             {
                 case "name_desc":
-                    Listcategorias = Listcategorias.OrderByDescending(s => s.Name);
-                    break;
-                case "Date":
-                    Listcategorias = Listcategorias.OrderBy(s => s.DateCriation);
-                    break;
-                case "date_desc":
-                    Listcategorias = Listcategorias.OrderByDescending(s => s.DateCriation);
+                    Listcategorias = Listcategorias.OrderByDescending(s => s.Name).ToList();
                     break;
                 default:
-                    Listcategorias = Listcategorias.OrderBy(s => s.Name);
+                    Listcategorias = Listcategorias.OrderBy(s => s.Name).ToList();
                     break;
             }
-            int pageSize = 10;
+            
+            if (model.PageNumber == 0)
+            {
+                model.PageNumber = 1;
+            }
+            if (model.PageSize == 0)
+            {
+                model.PageSize = 10;
+            }
 
-
-            var paginationList = await Task.FromResult(new PaginationList<Category>( pageNumber ?? 1, pageSize));
+            var paginationList = await Task.FromResult(new PaginationList<Category>( model.PageNumber, model.PageSize));
             return View(paginationList.Read(Listcategorias));
         }
 

@@ -89,9 +89,22 @@ namespace WebApplication.Controllers
             return View(paginationList.Read(listBook));
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Details(Guid id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Books
+                .Include(b => b.Category)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return View(book);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -105,9 +118,9 @@ namespace WebApplication.Controllers
         {
             var book = await _context.Books.FindAsync(id);
 
-            byte[] photoBack = book.Image;
+            byte[] imageBack = book.Image;
 
-            return File(photoBack, "image/png");
+            return File(imageBack, "image/png");
         }
     }
 }

@@ -15,11 +15,11 @@
             <ul class="pagination">
                 @if (Model.CurrentPage == 1)
                 {
-                    <li class="disabled"><a class="disabled">Anterior</a></li>
+                    <li class="disabled"><a class="disabled"> &laquo; </a></li>
                 }
                 else
                 {
-                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.CurrentPage-1)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.CurrentPage-1)');">Anterior</a></li>
+                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.CurrentPage-1)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.CurrentPage-1)');">&laquo;</a></li>
                 }
 
                 @if (Model.CurrentPage < 5)
@@ -79,11 +79,11 @@
 
                 @if (Model.CurrentPage == Model.TotalPages)
                 {
-                    <li class="disabled"><a href="javascript:void(0);">Next</a></li>
+                    <li class="disabled"><a href="javascript:void(0);">&raquo;</a></li>
                 }
                 else
                 {
-                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.CurrentPage+1)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.CurrentPage+1)');">Next</a></li>
+                    <li><a href="/@Model.Controller/@Model.Action/?PageNumber=@(Model.CurrentPage+1)&PageSize=@Model.PageSize" onclick="PageClicked('@(Model.CurrentPage+1)');">&raquo;</a></li>
                 }
             </ul>
             <div style="display:none;">

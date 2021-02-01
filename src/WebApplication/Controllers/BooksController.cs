@@ -12,13 +12,14 @@ using Microsoft.Extensions.Logging;
 using Domain.Interface;
 using WebApplication.ModelView;
 using Domain.Paginator;
-using PagedList;
 using WebApplication.Models;
 using Microsoft.AspNetCore.Http;
 using WebApplication.Models.Pagination;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApplication.Controllers
 {
+    [Authorize]
     public class BooksController : BaseController
     {
         private readonly ILogger<BooksController> _logger;

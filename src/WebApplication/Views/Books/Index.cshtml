@@ -1,5 +1,4 @@
 ﻿@model WebApplication.Models.Pagination.PaginationList<Domain.Book>
-@using PagedList.Mvc;
 
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
@@ -151,10 +150,9 @@
 @if (Model.TotalPage > 1)
 {
 
-    <div id="container" style="margin-left: 20px">
-        <p></p>
-        <p></p>
-        <div class="pagination" style="margin-left: 400px">
+<div id="container">
+    <div class="row justify-content-center">
+        <div class="pagination">
 
             <partial name="../Shared/_PagingPartial.cshtml" model='new WebApplication.Models.Pagination.PagingEntity {
                 CurrentPage = Model.PageNumber,
@@ -166,4 +164,5 @@
             }'>
         </div>
     </div>
+</div>
 }
