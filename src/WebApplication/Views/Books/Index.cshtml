@@ -13,7 +13,29 @@
 <p>
     <a class="btn btn-link" asp-action="Create">Novo Livro</a>
 </p>
+<hr />
+<div class="row" style="padding: 20px ;">
+    <form asp-controller="Home" asp-action="Index" method="get" style="width: 100%;">
+        <div class="col-sm-21   float-left">
+            <select name="CategoryFilter" class="form-control single-select" asp-items="ViewBag.Categorys">
+                <option value="">Todas</option>
+            </select>
+        </div>
+        <div class="col-sm-2   float-left">
+            <select name="RentedFilter" class="form-control single-select" asp-items="ViewBag.rentedOption">
+            </select>
+        </div>
+        <div class="col-4  float-left">
+            <input type="text" name="SearchString" value="@ViewBag.CurrentFilter" class="form-control" />
+        </div>
+        <div class="col-3 float-left">
+            <button class="btn btn-primary">Pesquisar</button>
+            <a asp-action="Index" class="btn btn-lin">Resetar</a>
+        </div>
 
+    </form>
+</div>
+<hr />
 <table class="table table-hover table-striped table-bordered table-sm">
     <thead>
         <tr>
@@ -46,87 +68,102 @@
     <tbody>
         @foreach (var item in Model.Result)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Author)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateCriation)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PublishingCompany)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
-            </td>
-            @{
-                string rentedItem = "";
-                @if (item.Rented)
-                {
-                    rentedItem = "rentedItem";
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Author)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateCriation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PublishingCompany)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                @{
+                    string rentedItem = "";
+                    @if (item.Rented)
+                    {
+                        rentedItem = "rentedItem";
+                    }
+                    else
+                    {
+                        rentedItem = "notRentedItem";
+                    }
                 }
-                else
-                {
-                    rentedItem = "notRentedItem";
-                }
-            }
-            <td class="@rentedItem">
-                @if (item.Rented == true)
-                {
-                    <text>Alugado</text>;
-                }
-                else
-                {
-                    <text>Disponivel</text>;
-                }
+                <td class="@rentedItem">
+                    @if (item.Rented == true)
+                    {
+                        <text>Alugado</text>;
+                    }
+                    else
+                    {
+                        <text>Disponivel</text>;
+                    }
 
-            </td>
-            @{
-                string excludedItem = "";
-                @if (item.Excluded)
-                {
-                    excludedItem = "rentedItem";
+                </td>
+                @{
+                    string excludedItem = "";
+                    @if (item.Excluded)
+                    {
+                        excludedItem = "rentedItem";
+                    }
+                    else
+                    {
+                        excludedItem = "notRentedItem";
+                    }
                 }
-                else
-                {
-                    excludedItem = "notRentedItem";
-                }
-            }
-            <td class="@excludedItem">
-                @if (item.Excluded == true)
-                {
-                    <text>Sim</text>;
-                }
-                else
-                {
-                    <text>Não</text>;
-                }
+                <td class="@excludedItem">
+                    @if (item.Excluded == true)
+                    {
+                        <text>Sim</text>;
+                    }
+                    else
+                    {
+                        <text>Não</text>;
+                    }
 
-            </td>
-            <td class="arround-icons-center">
-                <a asp-action="Edit" asp-route-id="@item.Id" style="margin: 5px 10px;"><i class="fas fa-pen-alt fa-1x"></i></a>
-                <a asp-action="Details" asp-route-id="@item.Id" style="margin: 5px 10px;"><i class="fas fa-search"></i></a>
-                <a asp-action="Delete" asp-route-id="@item.Id" style="margin: 5px 10px;"><i class="fas fa-trash fa-1x"></i></a>
-            </td>
-        </tr>
+                </td>
+                <td class="arround-icons-center">
+                    <a asp-action="Edit" asp-route-id="@item.Id" style="margin: 5px 10px;"><i class="fas fa-pen-alt fa-1x"></i></a>
+                    <a asp-action="Details" asp-route-id="@item.Id" style="margin: 5px 10px;"><i class="fas fa-search"></i></a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" style="margin: 5px 10px;"><i class="fas fa-trash fa-1x"></i></a>
+                </td>
+            </tr>
+        }
+        @if (Model.Result.Count() == 0)
+        {
+            <tr>
+                <td colspan="7" class="noResultsFound">
+                    Nenhum Resultado encontrado
+                </td>
+            </tr>
         }
     </tbody>
 </table>
 
-<div id="container" style="margin-left: 20px">
-    <p></p>
-    <p></p>
-    <div class="pagination" style="margin-left: 400px">
-        <partial name="../Shared/_PagingPartial.cshtml" model='new WebApplication.Models.Pagination.PagingEntity {
-            CurrentPage = Model.PageNumber,
-            PageSize = Model.PageSize,
-            TotalPages = Model.TotalPage,
-            TotalRecords = Model.TotalRecords,
-            Action = "Index",
-            Controller = "Books"
+
+
+@if (Model.TotalPage > 1)
+{
+
+    <div id="container" style="margin-left: 20px">
+        <p></p>
+        <p></p>
+        <div class="pagination" style="margin-left: 400px">
+
+            <partial name="../Shared/_PagingPartial.cshtml" model='new WebApplication.Models.Pagination.PagingEntity {
+                CurrentPage = Model.PageNumber,
+                PageSize = Model.PageSize,
+                TotalPages = Model.TotalPage,
+                TotalRecords = Model.TotalRecords,
+                Action = "Index",
+                Controller = "Books"
             }'>
+        </div>
     </div>
-</div>
+}

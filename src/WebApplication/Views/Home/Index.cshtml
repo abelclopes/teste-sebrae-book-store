@@ -1,38 +1,34 @@
 ﻿@model WebApplication.Models.Pagination.PaginationList<Domain.Book>
-@using PagedList.Mvc;
-
-<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <hr />
-<div class="row" style="padding: 20px ;">    
-    <form asp-controller="Home" asp-action="Index" style="width: 100%;">
-        <div class="col-sm-3   float-left">
-           <select  name="categoryFilter" class="form-control single-select" asp-items="ViewBag.Categorys">
+<div class="row" style="padding: 20px ;">
+    <form asp-controller="Home" asp-action="Index" method="get" style="width: 100%;">
+        <div class="col-sm-21   float-left">
+            <select name="CategoryFilter" class="form-control single-select" asp-items="ViewBag.Categorys">
                 <option value="">Todas</option>
             </select>
         </div>
-        <div class="col-5  float-left">
+        <div class="col-sm-2   float-left">
+            <select name="RentedFilter" class="form-control single-select" asp-items="ViewBag.rentedOption">
+            </select>
+        </div>
+        <div class="col-4  float-left">
             <input type="text" name="SearchString" value="@ViewBag.CurrentFilter" class="form-control" />
         </div>
         <div class="col-3 float-left">
             <button class="btn btn-primary">Pesquisar</button>
             <a asp-action="Index" class="btn btn-lin">Resetar</a>
         </div>
-        
-        <div class="col-sm-12   float-left">
-           <select  name="rentedFilter" class="form-control single-select" asp-items="ViewBag.rentedOption">
-                <option value="">Todas</option>
-            </select>
-        </div>
+
     </form>
 </div>
 @foreach (var item in Model.Result)
 {
-    
+
     <hr />
     <div class="row">
         <div class="col-sm-3">
@@ -62,7 +58,7 @@
                 </p>
             </div>
 
-            
+
             <div class="col-sm-12" style="padding: 0px; text-transform:capitalize">
                 <div class="col-sm-12" style="text-transform:capitalize">
                     <strong>Categoria:</strong> @Html.DisplayFor(modelItem => item.Category.Name)
@@ -71,25 +67,28 @@
                 <div class="col-sm-12">
                     <strong>Editora: </strong>  @Html.DisplayFor(modelItem => item.PublishingCompany)
                 </div>
-                    @{
-                        string rentedItem = "";
-                        @if(item.Rented)
+                @{
+                    string rentedItem = "";
+                    @if (item.Rented)
+                    {
+                        rentedItem = "rentedItem";
+                    }
+                    else
+                    {
+                        rentedItem = "notRentedItem";
+                    }
+                }
+                <div class="col-sm-12">
+                    <strong>Disponivel?</strong>  <strong class="@rentedItem">
+                        @if (item.Rented)
                         {
-                            rentedItem = "rentedItem";
+                            <text>Não</text>
                         }
                         else
                         {
-                            rentedItem = "notRentedItem";
+                            <text>Sim</text>
                         }
-                    }
-                <div class="col-sm-12">
-                <strong>Disponivel?</strong>  <strong class="@rentedItem">
-                                    @if(item.Rented){
-                                        <text>Não</text>
-                                    }else{
-                                        <text>Sim</text>
-                                    }
-                                </strong>
+                    </strong>
                 </div>
 
                 <div class="col-sm-12">
@@ -98,19 +97,31 @@
 
                 <div class="col-sm-12">
                     <strong>Ultima Atualização:</strong> @Html.DisplayFor(modelItem => item.DateUpdate)
-                </div>           
+                </div>
             </div>
         </div>
     </div>
-    
-}
 
-<partial name="../Shared/_PagingPartial.cshtml" model='new WebApplication.Models.Pagination.PagingEntity {
-    CurrentPage = Model.PageNumber,
-    PageSize = Model.PageSize,
-    TotalPages = Model.TotalPage,
-    TotalRecords = Model.TotalRecords,
-    Action = "Index",
-    Controller = "Home"
-    }'>
-    <br />
+}
+@if (Model.Result.Count() == 0)
+{
+    <hr />
+    <div class="row">
+        <div class="noResultsFound">
+            Nenhum Resultado encontrado
+        </div>
+    </div>
+}
+@if (Model.TotalPage > 1)
+{
+    <div>
+        <partial name="../Shared/_PagingPartial.cshtml" model='new WebApplication.Models.Pagination.PagingEntity {
+            CurrentPage = Model.PageNumber,
+            PageSize = Model.PageSize,
+            TotalPages = Model.TotalPage,
+            TotalRecords = Model.TotalRecords,
+            Action = "Index",
+            Controller = "Home"
+            }'>
+    </div>
+}

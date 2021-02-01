@@ -30,49 +30,69 @@ namespace WebApplication.Controllers
 
 
         // GET: Books
-        public async Task<IActionResult> Index(string sortOrder,
-                                                string currentFilter,
-                                                string searchString,
-                                                int pageNumber)
+        [HttpGet]
+        public async Task<IActionResult> Index(PagingParamters model)
         {
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-            if (searchString != null)
+            ViewData["CurrentSort"] = model.SortOrder == null ? "" : model.SortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(model.SortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = model.SortOrder == "Date" ? "date_desc" : "Date";
+            if (model.SearchString != null)
             {
-                pageNumber = 1;
+                model.PageNumber = 1;
             }
             else
             {
-                searchString = currentFilter;
+                model.SearchString = model.CurrentFilter;
             }
-            ViewData["CurrentFilter"] = searchString;
-            var listBook = _context.Books.Include(b => b.Category).AsQueryable(); //.Join(_context.Categories, book => book.CategoryId, cat => cat.Id, (book, cat) => new { Book = book, Category = cat });
-            if (!String.IsNullOrEmpty(searchString))
+            ViewBag.categoryFilter = model.CategoryFilter;
+            ViewBag.CurrentFilter = model.SearchString;
+            var listBook = await _context.Books.Include(b => b.Category).Where(x => !x.Excluded).ToListAsync();
+            //listBook = listBook.AsQueryable();
+            if (!String.IsNullOrEmpty(model.CategoryFilter))
             {
-                listBook = listBook.Where(x => x.Title.Contains(searchString)
-                               || x.Description.Contains(searchString));
+                listBook = listBook.Where(x => x.CategoryId.ToString() == model.CategoryFilter).ToList();
+            }
+            if (!String.IsNullOrEmpty(model.SearchString))
+            {
+                listBook = listBook.Where(x => x.Title.Contains(model.SearchString)
+                               || x.Description.Contains(model.SearchString)).ToList();
+            }
+            if (model.RentedFilter == "True")
+            {
+                listBook = listBook.Where(x => x.Rented).ToList();
+            }
+            else if (model.RentedFilter == "False")
+            {
+                listBook = listBook.Where(x => !x.Rented).ToList();
             }
 
-            switch (sortOrder)
+            switch (model.SortOrder)
             {
                 case "name_desc":
-                    listBook = listBook.OrderByDescending(s => s.Title);
+                    listBook = listBook.OrderByDescending(s => s.Title).ToList();
                     break;
                 case "Date":
-                    listBook = listBook.OrderBy(s => s.DateCriation);
+                    listBook = listBook.OrderBy(s => s.DateCriation).ToList();
                     break;
                 case "date_desc":
-                    listBook = listBook.OrderByDescending(s => s.DateCriation);
+                    listBook = listBook.OrderByDescending(s => s.DateCriation).ToList();
                     break;
                 default:
-                    listBook = listBook.OrderBy(s => s.Title);
+                    listBook = listBook.OrderBy(s => s.Title).ToList();
                     break;
             }
 
-            int pageSize = 10;
-
-            var paginationList = new PaginationList<Book>(pageNumber, pageSize);
+            if (model.PageNumber == 0)
+            {
+                model.PageNumber = 1;
+            }
+            if (model.PageSize == 0)
+            {
+                model.PageSize = 10;
+            }
+            ViewBag.Categorys = new SelectList(await _context.Categories.OrderBy(c => c.Name).ToListAsync(), "Id", "Name", model.CategoryFilter);
+            ViewBag.rentedOption = new SelectList(SelectListOptionsViewModel.GetList(), "Key", "Value", model.RentedFilter);
+            var paginationList = await Task.FromResult(new PaginationList<Book>(model.PageNumber, model.PageSize));
             return View(paginationList.Read(listBook));
         }
 
