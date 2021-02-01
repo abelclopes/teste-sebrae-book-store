@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Domain;
+using System.Linq;
+
 namespace Domain.Interface
 {
     public interface IContext
@@ -17,5 +19,7 @@ namespace Domain.Interface
         DatabaseFacade Database { get; }
         Task<int> SaveChangesAsync();
         int SaveChanges();
+        void Dispose();
     }
+    
 }
