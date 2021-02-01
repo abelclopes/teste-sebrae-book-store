@@ -156,6 +156,7 @@ ul.pagination li.active a:hover {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
-.pagination li.disabled{
 
+.margin-botton {
+  margin-bottom: 10px;
 }
