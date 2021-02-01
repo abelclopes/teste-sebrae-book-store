@@ -43,7 +43,7 @@ namespace WebApplication
 
         private static void ResolveDependencies(IServiceCollection services)
         {
-            services.AddScoped<IContext, ApplicationDbContext>();
+            services.AddScoped<IContext, ApplicationDbContext>();            
             services.AddScoped<IActivityLog, FileSystemActivityLog>();
             services.AddScoped<IErrorLog, FileSystemErrorLog>();
 

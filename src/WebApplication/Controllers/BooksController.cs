@@ -23,6 +23,8 @@ namespace WebApplication.Controllers
     public class BooksController : BaseController
     {
         private readonly ILogger<BooksController> _logger;
+        
+        // Often this would actually be an EF Core DB Context injected in constructor!
 
         public BooksController(IContext context, ILogger<BooksController> logger) : base(context)
         {
